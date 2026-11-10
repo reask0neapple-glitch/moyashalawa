@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>...</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    font-family: "Courier New", Courier, monospace; 
+    cursor: pointer;
+  }
+
+  /* КИСА с эффектом плохого качества */
+  #tg-link {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    color: #ff0000;
+    text-decoration: none;
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 6px; 
+    filter: blur(0.8px);
+    text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.7), -2px 0px 0px rgba(255, 0, 0, 0.7);
+    animation: flicker 4s infinite alternate;
+  }
+
+  #bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 1;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .gradient-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40vh;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Цитаты снизу с плохим качеством */
+  #quote {
+    position: absolute;
+    bottom: 60px;
+    left: 10%;
+    width: 80%;
+    text-align: center;
+    color: #e0e0e0; 
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1.4;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    filter: blur(0.5px);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8), -1px 0px 0px rgba(255, 0, 0, 0.3);
+  }
+
+  #quote.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      filter: blur(0.8px);
+      text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.7), -2px 0px 0px rgba(255, 0, 0, 0.7);
+    }
+    20%, 24%, 55% {
+      filter: blur(1.5px); 
+      text-shadow: none;
+      opacity: 0.8;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ПЛЕЕР ДЛЯ МУЗЫКИ (название с твоего скрина) -->
+  <audio id="bg-music" loop>
+    <source src="music - reaskone.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Ссылка на телеграм в виде красной надписи -->
+  <a href="https://t.me/swaggpf" target="_blank" id="tg-link">КИСА</a>
+
+  <img id="bg-image" src="" alt="">
+  <div class="gradient-overlay"></div>
+  <div id="quote"></div>
+
+  <script>
+    // Массив с твоими картинками и цитатами
+    const slides = [
+      { image: "IMG_6671.jpeg", text: "твои подружки говорят что мы друг друга убили" },
+      { image: "IMG_6672.jpeg", text: "кошмар с тобой оказался вещим" },
+      { image: "IMG_6673.jpeg", text: "светофоры за окном поменяли свои роли" },
+      { image: "IMG_6664.jpeg", text: "от грязной магии кружится голова" },
+      { image: "IMG_6662.jpeg", text: "мы слишком сломаны для этих глупых стихов" }
+    ];
+
+    let currentIndex = 0;
+    let musicStarted = false; // Флаг, чтобы музыка не начиналась заново
+    const imgElement = document.getElementById('bg-image');
+    const textElement = document.getElementById('quote');
+
+    function showSlide(index) {
+      textElement.classList.remove('show');
+      imgElement.style.opacity = 0;
+
+      setTimeout(() => {
+        imgElement.src = slides[index].image;
+        textElement.innerText = slides[index].text;
+        imgElement.style.opacity = 1;
+
+        setTimeout(() => {
+          textElement.classList.add('show');
+        }, 300);
+      }, 300);
+    }
+
+    window.onload = () => {
+      showSlide(currentIndex);
+    };
+
+    document.body.addEventListener('click', (e) => {
+      // Если нажали на надпись КИСА — выходим, не меняем картинку
+      if (e.target.closest('#tg-link')) return; 
+
+      // Включаем музыку при первом клике по экрану
+      if (!musicStarted) {
+        const audio = document.getElementById('bg-music');
+        audio.volume = 0.4; // Громкость 40%
+        audio.play().catch(error => console.log("Ошибка воспроизведения:", error));
+        musicStarted = true;
+      }
+
+      currentIndex++;
+      if (currentIndex >= slides.length) {
+        currentIndex = 0; // Если картинки закончились, начинаем сначала
+      }
+      showSlide(currentIndex);
+    });
+  </script>
+
+</body>
+</html>
